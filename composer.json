@@ -1,0 +1,22 @@
+{
+    "name": "mohamed-mennour/mvccodeholic2",
+    "autoload": {
+        "psr-4": {
+            "MohamedMennour\\Mvccodeholic2\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mohamed Mennour",
+            "email": "mohamedmennour25@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "./"
+        }
+    }
+}
