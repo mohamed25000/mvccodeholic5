@@ -2,6 +2,8 @@
 
 namespace app\core;
 
+use app\core\exception\NotFoundException;
+
 class Router
 {
     public Request $request;
@@ -30,8 +32,10 @@ class Router
 
         $callback = $this->routes[$method][$path] ?? false;
         if(! $callback) {
-            $this->response->setStatusCode(404);
-            return $this->renderView("404");
+            //$this->response->setStatusCode(404);
+            //return $this->renderView("404");
+            throw new NotFoundException();
+
         }
 
         if(is_string($callback)) {
@@ -42,8 +46,23 @@ class Router
             //return call_user_func([new $callback[0],$callback[1]]);
            //$callback[0] = new $callback[0];
             //$callback[0] = new $callback[0];
-            Application::$app->controller = new $callback[0]();
-            $callback[0] = Application::$app->controller;
+            /**
+             * @var Controller $controller
+             */
+            $controller = new $callback[0];
+
+            //Application::$app->controller = new $callback[0]();
+            //Application::$app->controller->action = $callback[1];
+            //$callback[0] = Application::$app->controller;
+
+            Application::$app->controller = $controller;
+            $controller->action = $callback[1];
+            $callback[0] = $controller;
+
+            foreach ($controller->getMiddleware() as $middleware ) {
+                $middleware->execute();
+            }
+
         }
 
         return call_user_func($callback, $this->request, $this->response);
@@ -67,10 +86,14 @@ class Router
 
     private function layoutContent()
     {
-        $layout = Application::$app->controller->layout;
+        $layout = Application::$app->layout;
+        if(Application::$app->controller->layout) {
+            $layout = Application::$app->controller->layout;
+        }
         ob_start();
         include_once Application::$ROOT_DIR . "/views/layouts/$layout.php";
         return ob_get_clean();
+
     }
 
     protected function renderOnlyView($view, array $params = [])

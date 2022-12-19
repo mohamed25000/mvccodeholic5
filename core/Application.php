@@ -8,6 +8,8 @@ class Application
 {
     public static string $ROOT_DIR;
 
+    public string $layout = "main";
+
     public string $userClass;
 
     public Router $router;
@@ -16,7 +18,7 @@ class Application
     public Database $db;
     public Session $session;
     public static Application $app;
-    public Controller $controller;
+    public ?Controller $controller = null;
     public ?DbModel $user;
 
     /**
@@ -50,7 +52,14 @@ class Application
 
     public function run()
     {
-        echo $this->router->resolve();
+        try {
+            echo $this->router->resolve();
+        } catch (\Exception $ex) {
+            $this->response->setStatusCode($ex->getCode());
+            echo $this->router->renderView('_error', [
+                "exception" => $ex
+            ]);
+        }
     }
 
     /**
@@ -70,13 +79,13 @@ class Application
         return true;
     }
 
-    public function logout()
+    public function logout(): void
     {
         $this->user = null;
         $this->session->remove('user');
     }
 
-    public static function isGuest()
+    public static function isGuest(): bool
     {
         return !self::$app->user;
     }
