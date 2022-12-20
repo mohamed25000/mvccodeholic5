@@ -2,6 +2,12 @@
 /**
  * @var $exception Exception
  */
+
+/**
+ * @var $this \app\core\View
+ */
+
+$this->title = "error";
 ?>
 
 

@@ -2,6 +2,12 @@
 /**
  * @var $model \app\models\User
  */
+
+/**
+ * @var $this \app\core\View
+ */
+
+$this->title = "login";
 ?>
 
 <h1>Login</h1>
